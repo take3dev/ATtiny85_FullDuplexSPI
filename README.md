@@ -1,6 +1,6 @@
 # attiny85_full-duplex-spi
 
-Follow the development of an ATtiny85 SPI driver at [take3dev.com](take3dev.com)
+Follow the development of an ATtiny85 SPI driver at [take3dev.com](https://www.take3dev.com)
 
 ## About this repository
 
@@ -11,5 +11,5 @@ navigate to the most recent tag in the v3.x family.
 ## How to use this codebase
 
 In an effort to keep this repository light-weight, I am only uploading relevant code and reference documentation without project or build files. If you are following along
-directly with the articles on [take3dev.com](take3dev.com) then you already have an Atmel Studio solution under development and can cross-reference your code with the files
+directly with the articles on [take3dev.com](https://www.take3dev.com) then you already have an Atmel Studio solution under development and can cross-reference your code with the files
 in this repository. If you have come from another part of the internet, welcome and use the files within as you see fit for your needs.
