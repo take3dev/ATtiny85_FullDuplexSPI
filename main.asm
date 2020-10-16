@@ -42,6 +42,15 @@
 ;   provide the called procedure with a base address at which to begin
 ;   writing.
 ;
+; ===== DOCUMENTATION DETAILS =====
+; Callable procedures will contain a doc header formatted as follows:
+; - Label
+; - Brief of purpose
+; - C-like abstraction of implementation
+; - Parameter register descriptions
+; - Returns register descriptions
+; - Memory/stack use if applicable
+;
 ; ===== REFERENCE DOCUMENTS =====
 ; ATtiny85 datasheet:
 ;     Atmel document 2586Q-AVR-08/2013
@@ -83,6 +92,7 @@ RESET:
 
 ; ===== INITIALIZATION =====
 io_init:
+    ; PB0 (DI):  INPUT (implicit)
     ; PB1 (DO):  output
     ; PB2 (SCK): output
     ldi r16, (1<<PORTB1) | (1<<PORTB2)
@@ -97,20 +107,25 @@ spi_init:
 
 ; ===== APPLICATION CODE =====
 main_loop:
-    ldi r16, 0b10100101
-    rcall spi_transfer
+    ldi r24, 0b10100101
+    rcall spi_byte_transfer
+    mov r16, r24
     rjmp main_loop
 
-; ===== SPI =====
-spi_transfer:
-    out USIDR, r16 ; Transfer payload from r16 to USI data register
+; ===== SPI MASTER =====
+; spi_byte_transfer
+; Transmit and receive one byte over three-wire USI
+; uint8 spi_byte_transfer(uint8 payload)
+; Param R24: payload; Byte value to transmit
+; Return R24: Received byte
+spi_byte_transfer:
+    out USIDR, r24 ; Transfer payload from r24 to USI data register
     ldi r16, (1<<USIOIF) ; Clear counter overflow interrupt flag
     out USISR, r16
-
-spi_transfer_loop:
+spi_byte_transfer_loop:
     sbi USICR, USITC ; Toggle clock
     in r16, USISR    ; Record USI peripheral status
     sbrs r16, USIOIF ; Exit loop if counter overflow flag is set
-    rjmp spi_transfer_loop
-    in r16, USIBR
+    rjmp spi_byte_transfer_loop
+    in r24, USIBR
     ret
