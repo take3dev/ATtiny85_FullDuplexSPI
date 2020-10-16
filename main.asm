@@ -88,22 +88,29 @@ io_init:
     ldi r16, (1<<PORTB1) | (1<<PORTB2)
     out DDRB, r16
 
+spi_init:
+    ; Wire mode 01: three wire mode for SPI protocol
+    ; Clock source 10: external, positive edge
+    ; Clock strobe 1: select USITC as clock source
+    ldi r16, (1<<USIWM0) | (1<<USICS1) | (1<<USICLK)
+    out USICR, r16
+
 ; ===== APPLICATION CODE =====
 main_loop:
     ldi r16, 0b10100101
     rcall spi_transfer
     rjmp main_loop
 
+; ===== SPI =====
 spi_transfer:
-    out USIDR, r16
-    ldi r16, (1<<USIOIF)
+    out USIDR, r16 ; Transfer payload from r16 to USI data register
+    ldi r16, (1<<USIOIF) ; Clear counter overflow interrupt flag
     out USISR, r16
-    ldi r17, (1<<USIWM0) | (1<<USICS1) | (1<<USICLK) | (1<<USITC)
 
 spi_transfer_loop:
-    out USICR, r17
-    in r16, USISR
-    sbrs r16, USIOIF
+    sbi USICR, USITC ; Toggle clock
+    in r16, USISR    ; Record USI peripheral status
+    sbrs r16, USIOIF ; Exit loop if counter overflow flag is set
     rjmp spi_transfer_loop
     in r16, USIBR
     ret
