@@ -4,8 +4,43 @@
 ; Created: 9/26/2020 11:22:03
 ; Author : paul@take3dev.com
 ;
-; Code for Part 1 of the "Full-Duplex SPI on the ATtiny85 using AVR
-; Assembly" series on take3dev.com
+; Code for Full-Duplex SPI on the ATtiny85 using AVR Assembly series on
+; https://www.take3dev.com
+;
+; Register use and calling convention are covered in detail at:
+; https://take3dev.com/attiny85-register-introduction/
+;
+; ===== REGISTER LAYOUT =====
+; R0: Scratch register, need not be saved or restored surrounding use.
+; R1: Fixed register, always assumed to contain a value of 0.
+; R2 - R11: General purpose registers. These are call-saved, meaning the
+;   application can expect the data in these registers to be stored and
+;   restored by a subroutine before returning.
+; R12 - R15: Extended argument/return registers for called procedures.
+;   These are call-used, meaning the application should not expect data
+;   in these registers to remain persistent through a procedure call and
+;   return. The caller is responsible for storing and restoring data in
+;   these registers surrounding procedure calls.
+; R16, R17: Scratch registers, data need not be stored or restored
+;   surrounding use.
+; R18 - R21: General purpose immediate registers. Call-used.
+; R22 - R25: Primary argument/return registers for called functions.
+;   Call-used.
+; R26 - R31: X, Y, Z registers for indirect addressing. Call-saved.
+
+; ===== PROCEDURE CALL CONVENTION =====
+; Procedure calls are made in accordance with the avr-gcc ABI.
+; To summarize:
+; - Arguments are passed on even-number register boundaries starting at
+;   R24 and counting down with increased size requirements.
+; - If there is insufficient register space to handle arguments,
+;   arguments are passed in memory.
+; - Return values are passed back to the caller using the same register
+;   alignment as before
+; - If there will be insufficient register space to handle return values
+;   it is the responsibility of the caller to allocate stack space and
+;   provide the called procedure with a base address at which to begin
+;   writing.
 ;
 ; ===== REFERENCE DOCUMENTS =====
 ; ATtiny85 datasheet:
@@ -14,6 +49,8 @@
 ;     Atmel-0856L-AVR-Instruction-Set-Manual_Other-11/2016
 ; AVR assembler manual:
 ;     DS40001917A
+; AVR-GCC Application Binary Interface:
+;     https://gcc.gnu.org/wiki/avr-gcc
 
 .cseg
 ; ===== VECTOR TABLE =====
