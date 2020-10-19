@@ -61,6 +61,23 @@
 ; AVR-GCC Application Binary Interface:
 ;     https://gcc.gnu.org/wiki/avr-gcc
 
+; ===== MACROS =====
+; Interface for spi_tranfer procedure to transmit and receive N bytes
+;   as a SPI master
+; void spi_transfer(uint16 *pdataTx, uint16 *pdataRx, uint8 nbytes)
+; Param R21,20: pdataTx; SRAM address of transmit buffer
+; Param R23,22: pdataRx; SRAM address of receive buffer
+; Param R24: nbytes; Number of bytes to transmit and receive
+; Return none
+.macro _spi_txrx
+    ldi r20, low(@0) ; pdataTx
+    ldi r21, high(@0)
+    ldi r22, low(@1) ; pdataRx
+    ldi r23, high(@1)
+    ldi r24, @2 ; nbytes
+    rcall spi_transfer
+.endmacro
+
 .dseg
 ; ===== GLOBAL DATA INSTANTIATION =====
 tbuf: .byte 16 ; Transmit buffer, 16 bytes
@@ -123,12 +140,7 @@ main_loop:
     dec r16
     brne PC-0x03
     ; Prepare registers for SPI transfer call
-    ldi r20, low(tbuf) ; pdataTx
-    ldi r21, high(tbuf)
-    ldi r22, low(rbuf) ; pdataRx
-    ldi r23, high(rbuf)
-    ldi r24, 0x0d ; nbytes
-    rcall spi_transfer
+    _spi_txrx tbuf, rbuf, 0x0d
     rjmp main_loop
 
 ; ===== SPI MASTER =====
