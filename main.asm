@@ -140,6 +140,8 @@ main_loop:
 ; Param R23,22: pdataRx; SRAM address of receive buffer
 ; Param R24: nbytes; Number of bytes to transmit and receive
 ; Return none
+; X is the working register for the transmit pointer
+; Y is the working register for the receive pointer
 spi_transfer:
     nop
     ret
