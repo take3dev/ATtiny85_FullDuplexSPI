@@ -123,13 +123,12 @@ main_loop:
     dec r16
     brne PC-0x03
     ; Prepare registers for SPI transfer call
-    ldi r20, low(tbuf)
-    ldi r21, high(tbuf) ; pdataTx
-    ldi r22, low(rbuf)
-    ldi r23, high(rbuf) ; pdataRx
+    ldi r20, low(tbuf) ; pdataTx
+    ldi r21, high(tbuf)
+    ldi r22, low(rbuf) ; pdataRx
+    ldi r23, high(rbuf)
     ldi r24, 0x0d ; nbytes
     rcall spi_transfer
-    mov r16, r24
     rjmp main_loop
 
 ; ===== SPI MASTER =====
