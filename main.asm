@@ -136,4 +136,4 @@ spi_byte_transfer_loop:
     ret
 
 ; ===== CONSTANT DATA INITIALIZATION =====
-hello: .db "Hello World!"
+hello: .db "Hello World!", 0x00, 0x00 ; Extra padding 0 for alignment
