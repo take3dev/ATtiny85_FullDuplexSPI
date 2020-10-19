@@ -61,6 +61,11 @@
 ; AVR-GCC Application Binary Interface:
 ;     https://gcc.gnu.org/wiki/avr-gcc
 
+.dseg
+; ===== GLOBAL DATA INSTANTIATION =====
+tbuf: .byte 16 ; Transmit buffer, 16 bytes
+rbuf: .byte 16 ; Receive buffer, 16 bytes
+
 .cseg
 ; ===== VECTOR TABLE =====
 ; This vector table is taken directly from the ATtiny85 datasheet
@@ -129,3 +134,6 @@ spi_byte_transfer_loop:
     rjmp spi_byte_transfer_loop
     in r24, USIBR
     ret
+
+; ===== CONSTANT DATA INITIALIZATION =====
+hello: .db "Hello World!"
