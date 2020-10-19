@@ -143,7 +143,27 @@ main_loop:
 ; X is the working register for the transmit pointer
 ; Y is the working register for the receive pointer
 spi_transfer:
-    nop
+    ; TODO: Check for null pointers
+    ; TODO: Check nbytes > 0
+    push YH
+    push YL
+    push XH
+    push XL
+    movw XL, r20
+    movw YL, r22
+spi_transfer_loop:
+    ; push r24
+    ; load data to r24
+    ; call transfer
+    ; put data from r24
+    ; pop r24
+    ; dec r24
+    ; brne
+spi_transfer_exit:
+    pop XL
+    pop XH
+    pop YL
+    pop YH
     ret
 ; spi_byte_transfer
 ; Transmit and receive one byte over three-wire USI
