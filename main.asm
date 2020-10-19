@@ -62,7 +62,7 @@
 ;     https://gcc.gnu.org/wiki/avr-gcc
 
 ; ===== MACROS =====
-; Interface for spi_tranfer procedure to transmit and receive N bytes
+; Interface for spi_transfer procedure to transmit and receive N bytes
 ;   as a SPI master
 ; void spi_transfer(uint16 *pdataTx, uint16 *pdataRx, uint8 nbytes)
 ; Param R21,20: pdataTx; SRAM address of transmit buffer
@@ -139,7 +139,6 @@ main_loop:
     st X+, r0
     dec r16
     brne PC-0x03
-    ; Prepare registers for SPI transfer call
     _spi_txrx tbuf, rbuf, 0x0d
     rjmp main_loop
 
@@ -176,6 +175,7 @@ spi_transfer_exit:
     pop YL
     pop YH
     ret
+
 ; spi_byte_transfer
 ; Transmit and receive one byte over three-wire USI
 ; uint8 spi_byte_transfer(uint8 payload)
@@ -190,6 +190,7 @@ spi_byte_transfer_loop:
     in r16, USISR    ; Record USI peripheral status
     sbrs r16, USIOIF ; Exit loop if counter overflow flag is set
     rjmp spi_byte_transfer_loop
+spi_byte_transfer_exit:
     in r24, USIBR
     ret
 
