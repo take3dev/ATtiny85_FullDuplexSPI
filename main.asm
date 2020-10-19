@@ -152,13 +152,13 @@ spi_transfer:
     movw XL, r20
     movw YL, r22
 spi_transfer_loop:
-    ; push r24
-    ; load data to r24
-    ; call transfer
-    ; put data from r24
-    ; pop r24
-    ; dec r24
-    ; brne
+    push r24
+    ld r24, X+
+    rcall spi_byte_transfer
+    st Y+, r24
+    pop r24
+    dec r24
+    brne spi_transfer_loop
 spi_transfer_exit:
     pop XL
     pop XH
