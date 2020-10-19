@@ -112,12 +112,37 @@ spi_init:
 
 ; ===== APPLICATION CODE =====
 main_loop:
-    ldi r24, 0b10100101
-    rcall spi_byte_transfer
+    ; Move const string from Flash to transmit buffer in RAM
+    ldi r16, 0x0d ; Length of "Hello World!" + '\0'
+    ldi XL, low(tbuf)
+    ldi XH, high(tbuf)
+    ldi ZL, low(hello * 2) ; Flash is 16b wide so multiply address by 2
+    ldi ZH, high(hello * 2)
+    lpm r0, Z+
+    st X+, r0
+    dec r16
+    brne PC-0x03
+    ; Prepare registers for SPI transfer call
+    ldi r20, low(tbuf)
+    ldi r21, high(tbuf) ; pdataTx
+    ldi r22, low(rbuf)
+    ldi r23, high(rbuf) ; pdataRx
+    ldi r24, 0x0d ; nbytes
+    rcall spi_transfer
     mov r16, r24
     rjmp main_loop
 
 ; ===== SPI MASTER =====
+; spi_transfer
+; Transmit and receive N bytes as a SPI master
+; void spi_transfer(uint16 *pdataTx, uint16 *pdataRx, uint8 nbytes)
+; Param R21,20: pdataTx; SRAM address of transmit buffer
+; Param R23,22: pdataRx; SRAM address of receive buffer
+; Param R24: nbytes; Number of bytes to transmit and receive
+; Return none
+spi_transfer:
+    nop
+    ret
 ; spi_byte_transfer
 ; Transmit and receive one byte over three-wire USI
 ; uint8 spi_byte_transfer(uint8 payload)
